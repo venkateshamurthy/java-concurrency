@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<configuration xmlns="http://www.jooq.org/xsd/jooq-codegen-2.5.0.xsd">
+	<!-- Configure the database connection here -->
+	<jdbc>
+		<driver>oracle.jdbc.OracleDriver</driver>
+		<!-- <url>jdbc:oracle:thin:@${oracle.databaseHost}:${oracle.databasePort}/${oracle.databaseName}</url> -->
+		<url>jdbc:oracle:thin:@sp2-stgamd-clu.data.corp.sp2.yahoo.com:1521/amddbd_etl
+		</url>
+		<user>amd_ycpi_etl</user>
+		<password>amd_ycpi_etl</password>
+	</jdbc>
+	<generator>
+		<!-- The default code generator. You can override this one, to generate 
+			your own code style Defaults to org.jooq.util.DefaultGenerator -->
+		<name>org.jooq.util.DefaultGenerator</name>
+		<!-- 
+		<strategy>
+			<name>com.yahoo.global.amd.grid.reports.util.MyGeneratorStrategy</name>
+		</strategy>
+		 -->
+		<database>
+			<!-- The database type. The format here is: org.util.[database].[database]Database -->
+			<name>org.jooq.util.oracle.OracleDatabase</name>
+			<!-- The database schema (or in the absence of schema support, in your 
+				RDBMS this can be the owner, user, database name) to be generated -->
+			<inputSchema>AMD_YCPI_DIM</inputSchema>
+
+			<!-- All elements that are generated from your schema (several Java regular 
+				expressions, separated by comma) Watch out for case-sensitivity. Depending 
+				on your database, this might be important! -->
+			<includes>.*</includes>
+			<!-- All elements that are excluded from your schema (several Java regular 
+				expressions, separated by comma). Excludes match before includes -->
+			<excludes></excludes>
+			<forcedTypes>
+				<forcedType>
+					<name>NUMERIC</name>
+					<expressions>(.*\.DAY_KEY.*)</expressions>
+				</forcedType>
+			</forcedTypes>
+		</database>
+		<generate>
+			<records>true</records>
+		</generate>
+		<target>
+			<!-- The destination package of your generated classes (within the destination 
+				directory) -->
+			<packageName>com.yahoo.global.amd.grid.reports.db.objects.jooq.ycpidim</packageName>
+			<!-- The destination directory of your generated classes -->
+			<directory>src/main/generated</directory>
+		</target>
+	</generator>
+</configuration>
+<!-- set CP="C:/~/.m2/repository/org/jooq/jooq/2.6.1/jooq-2.6.1.jar;C:/~/.m2/repository/org/jooq/jooq-codegen/2.6.1/jooq-codegen-2.6.1.jar;c:/~/.m2/repository/org/jooq/jooq-meta/2.6.1/jooq-meta-2.6.1.jar;C:/~/.m2/repository/com/oracle/ojdbc6/11.2.0.3/ojdbc6-11.2.0.3.jar" 
+	java -cp %CP%;src/main/resources org.jooq.util.GenerationTool /jooq-config.xml -->

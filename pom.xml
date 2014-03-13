@@ -287,7 +287,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.13</version>
         <configuration>
-          <argLine>-Djava.library.path=${nativeDir}:${libDir}   -Dlog4j.properties=${log4jPath} ${surefireArgs}</argLine>
+          <argLine> -Dlog4j.properties=${log4jPath} ${surefireArgs}</argLine>
           <configuration>
             <excludes>
               <exclude>**/*IT</exclude>

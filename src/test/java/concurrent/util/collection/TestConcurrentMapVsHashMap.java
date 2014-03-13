@@ -32,8 +32,7 @@ public class TestConcurrentMapVsHashMap {
 		for (Enum<MapTest> e : MapTest.values())
 			log.info(String.format("Time took for %s:%d", e.name(),
 					e.valueOf(MapTest.class, e.name()).testAdd()));
-		if(MapTest.hashmap
-						.getDuration() < MapTest.concurrentmap.getDuration())
+		if(MapTest.hashmap.getDuration() < MapTest.concurrentmap.getDuration())
 		log.info(
 				String.format(
 						"Oh! HashMap puts and gets (%d) cannot take lesser time than concurrent map  (%d) ..",
@@ -57,8 +56,7 @@ public class TestConcurrentMapVsHashMap {
 	private enum MapTest implements TestInterface{
 		
 		concurrentmap() {
-			ConcurrentMap<String, Integer> m1 = new ConcurrentHashMap<>(
-					5_00_000, 0.9f, 2);
+			ConcurrentMap<String, Integer> m1 = new ConcurrentHashMap<String,Integer>(500000, 0.9f, 2);
 			{
 				super.m = m1;
 			}
@@ -96,7 +94,7 @@ public class TestConcurrentMapVsHashMap {
 		hashtable() {
 			Map<String, Integer> m = super.m;
 			{
-				m = new Hashtable<>();
+				m = new Hashtable<String,Integer>();
 				super.m = m = Collections.synchronizedMap(m);
 			}
 
@@ -131,12 +129,12 @@ public class TestConcurrentMapVsHashMap {
 			@Override
 			public void run() {
 
-				for (int i = 0; i < 5_00_000; i++) {
+				for (int i = 0; i < 500000; i++) {
 					// Return 2 integers between 1-1000000 inclusive
 					Integer newInteger1 = (int) Math
-							.ceil(Math.random() * 10_00_000);
+							.ceil(Math.random() * 1000000);
 					Integer newInteger2 = (int) Math
-							.ceil(Math.random() * 10_00_000);
+							.ceil(Math.random() * 1000000);
 
 					// 1. Attempt to retrieve a random Integer element
 					Integer retrievedInteger = map.get(String
@@ -186,15 +184,13 @@ public class TestConcurrentMapVsHashMap {
 		 * @param i
 		 * @return
 		 */
-		@Override
 		public abstract Integer putIfAbsent(String s, Integer i);
-		@Override
 		public abstract long testAdd();
 
 		@Getter
 		private long duration;
 		@Getter
-		Map<String, Integer> m = new HashMap<>();
+		Map<String, Integer> m = new HashMap<String,Integer>();
 
 	}
 

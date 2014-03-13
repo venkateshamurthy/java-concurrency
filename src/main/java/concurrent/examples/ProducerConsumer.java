@@ -220,9 +220,8 @@ public class ProducerConsumer {
 		TimeUnit.SECONDS.sleep(1);
 		phaser.arriveAndAwaitAdvance();
 		phaser.arriveAndDeregister();
+  	TimeUnit.SECONDS.sleep(3);
 		log.info("DONE ! parties awiting:" + phaser.getArrivedParties());
-		
-
 	}
 
 	@AllArgsConstructor()

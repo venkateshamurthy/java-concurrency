@@ -27,7 +27,7 @@ public class TestClosableResource {
 	@Test
 	public void justTestOpenClose() throws IOException {
 		@Cleanup("close")
-		FileInputStream in = new FileInputStream("c:/hosts") ;
+		FileInputStream in = new FileInputStream("/etc/hosts") ;
 		fin=in;
 	}
 	@Test

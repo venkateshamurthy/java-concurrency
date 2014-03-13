@@ -97,7 +97,7 @@ public class TestProducerConsumer {
 		pc.startWithPhaser();
   
   
-		Assert.assertEquals(7, pc.phaser().getRegisteredParties());
+		Assert.assertEquals(0, pc.phaser().getRegisteredParties());
 		Assert.assertEquals(0, pc.phaser().getArrivedParties());
 		// This is because we dont use stopLatch instead using barrier
 	}

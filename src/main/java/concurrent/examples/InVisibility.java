@@ -4,6 +4,7 @@
 package concurrent.examples;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.LockSupport;
 
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
@@ -12,12 +13,10 @@ import lombok.extern.log4j.Log4j2;
 
 /**
  * @author vmurthy
- * 
  */
 // Log4j Handle creator (from lombok)
 @Log4j2
 public class InVisibility {
-
 	public static void main(String[] args) {
 		new InVisibility().kickOff();
 	}
@@ -30,23 +29,28 @@ public class InVisibility {
 
 	@SneakyThrows(InterruptedException.class)
 	private void kickOff(Worker w) {
-		String workerType=w.getClass().getSimpleName();
+		String workerType = w.getClass().getSimpleName();
 		Thread t1 = new Thread(w);
 		t1.start();
 		TimeUnit.SECONDS.sleep(5);
 		for (int i = 0; i < 3; i++) {
 			t1.join(1000);
 			if (t1.isAlive()) {
-				log.info(String.format("The %s couldn't be stopped!",workerType));
+				log.info(String.format("The %s couldn't be stopped!",
+				        workerType));
 				continue;
 			} else {
-				log.info(String.format("The %s Stopped!",workerType));
+				log.info(String.format("The %s Stopped!", workerType));
 				break;
 			}
 		}
-		if(t1.isAlive()) {
-		t1.stop();log.info(String.format("The %s Stopped! atlast after nuking!!",workerType));}
-
+		if (t1.isAlive()) {
+			log.info("NO WAY!!....WELL NUKING IT NOW!!!..WOTH ABRUPT THREAD.STOP CALL");
+			LockSupport.parkNanos(3000000000L);
+			t1.stop();
+			log.info(String.format("The %s Stopped! atlast after nuking!!",
+			        workerType));
+		}
 	}
 
 	private static class UnstoppableWorker implements Worker {
@@ -65,7 +69,6 @@ public class InVisibility {
 
 		public void stop() {
 			start = false;
-
 		}
 	}
 
@@ -81,12 +84,11 @@ public class InVisibility {
 				Thread.currentThread().sleep(1000);
 				log.info("doing something");
 			}
-			//log.info("Stopping gracefully...");
+			// log.info("Stopping gracefully...");
 		}
 
 		public void stop() {
 			start = false;
-
 		}
 	}
 
@@ -102,12 +104,11 @@ public class InVisibility {
 				for (int i = 0; i < 100000; i++)
 					;
 			}
-			//log.info("Stopping gracefully...");
+			// log.info("Stopping gracefully...");
 		}
 
 		public void stop() {
 			start = false;
-
 		}
 	}
 

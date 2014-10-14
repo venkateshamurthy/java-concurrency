@@ -10,7 +10,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,13 +35,6 @@ public class UnAtomicity {
 
 	public static void main(String args[]) {
 		UnAtomicity ua = new UnAtomicity();
-		/*
-		 * ua.kickOffTransaction(new BrokenBankAccount() { public void
-		 * deposit(int x) { setCount(); setCountW(); super.deposit(x); }
-		 * 
-		 * public void withdraw(int x) { setCount(); setCountR();
-		 * super.withdraw(x); } });
-		 */
 		ua.kickOffTransaction(new FixUsingSynchronized());
 		ua.kickOffTransaction(new FixUsingLocks());
 	}
@@ -166,12 +160,9 @@ public class UnAtomicity {
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see
-		 * com.yahoo.global.amd.concurrency.experiments.UnAtomicity.BankAccount
-		 * #getBalance()
 		 */
 		@Override
-		public/* synchronized */int getBalance() {
+		public synchronized int getBalance() {
 			countR.incrementAndGet();
 			return balance;
 		}
@@ -182,12 +173,12 @@ public class UnAtomicity {
 	private static class FixUsingLocks implements BankAccount {
 		private volatile int balance = 0;
 		@NonNull
-		private final/* ReadWrite */Lock rwLock = new ReentrantLock();/*
-																	 * ReentrantReadWriteLock
-																	 * ()
-																	 */
-		// private final Lock rLock = rwLock.readLock();
-		private final Lock wLock = rwLock;// .writeLock();
+		private final ReadWriteLock rwLock = //new ReentrantLock();
+											new	ReentrantReadWriteLock
+																	 (false);
+																	 
+		private final Lock rLock = rwLock.readLock();
+		private final Lock wLock = rwLock.writeLock();
 
 		@NonNull
 		private final Condition withdrawCondition = wLock.newCondition();
@@ -222,10 +213,10 @@ public class UnAtomicity {
 				while (x > balance)
 					withdrawCondition.await();
 				balance -= x;
-				Assert.assertFalse(balance < 0);
+				//Assert.assertFalse(balance < 0);
 				wLock.unlock();
 			} else
-				log.debug("Tried to get Lock for with drawal but in vain");
+				/*log.debug("Tried to get Lock for withdrawal but in vain")*/;
 		}
 
 		public long getCountOfOperations() {
@@ -235,14 +226,19 @@ public class UnAtomicity {
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see
-		 * com.yahoo.global.amd.concurrency.experiments.UnAtomicity.BankAccount
-		 * #getBalance()
 		 */
 		@Override
 		public int getBalance() {
 			countR.incrementAndGet();
-			return balance;
+			int bal;
+			rLock.lock();
+			try{
+			
+			bal= balance;
+			}finally{
+			rLock.unlock();
+			}
+			return bal;
 		}
 
 	}

@@ -66,7 +66,7 @@ public class UnAtomicity {
 		});
 
 		t1.start();
-		Thread[] tW = new Thread[1];
+		Thread[] tW = new Thread[2];
 		for (int i = 0; i < tW.length; i++) {
 			tW[i] = new Thread(new Runnable() {
 
@@ -90,7 +90,7 @@ public class UnAtomicity {
 
 			tW[i].start();
 		}
-		Thread[] tR = new Thread[1];
+		Thread[] tR = new Thread[5];
 		for (int i = 0; i < tR.length; i++) {
 			tR[i] = new Thread(new Runnable() {
 
@@ -208,7 +208,7 @@ public class UnAtomicity {
 		@SneakyThrows
 		public void withdraw(int x) {
 
-			if (wLock.tryLock(100, TimeUnit.MICROSECONDS)) {
+			if (wLock.tryLock(1, TimeUnit.NANOSECONDS)) {
 				countW.incrementAndGet();
 				while (x > balance)
 					withdrawCondition.await();
@@ -231,13 +231,13 @@ public class UnAtomicity {
 		public int getBalance() {
 			countR.incrementAndGet();
 			int bal;
-			rLock.lock();
-			try{
+			//rLock.lock();
+			//try{
 			
 			bal= balance;
-			}finally{
-			rLock.unlock();
-			}
+			//}finally{
+			//rLock.unlock();
+			//}
 			return bal;
 		}
 

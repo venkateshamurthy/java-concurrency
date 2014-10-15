@@ -21,6 +21,8 @@ import lombok.Synchronized;
 import lombok.extern.log4j.Log4j2;
 
 import org.junit.Assert;
+
+import concurrent.util.StampedLock;
 //Using lombok annotation for log4j handle
 
 //Use log4j and hence basic configurator
@@ -36,7 +38,8 @@ public class UnAtomicity {
 	public static void main(String args[]) {
 		UnAtomicity ua = new UnAtomicity();
 		ua.kickOffTransaction(new FixUsingSynchronized());
-		ua.kickOffTransaction(new FixUsingLocks());
+		ua.kickOffTransaction(new FixUsingRWLocks());
+		ua.kickOffTransaction(new FixUsingStampedLocks());
 	}
 
 	@SneakyThrows
@@ -170,7 +173,7 @@ public class UnAtomicity {
 	}
 
 	@NoArgsConstructor
-	private static class FixUsingLocks implements BankAccount {
+	private static class FixUsingRWLocks implements BankAccount {
 		private volatile int balance = 0;
 		@NonNull
 		private final ReadWriteLock rwLock = //new ReentrantLock();
@@ -180,8 +183,8 @@ public class UnAtomicity {
 		private final Lock rLock = rwLock.readLock();
 		private final Lock wLock = rwLock.writeLock();
 
-		@NonNull
-		private final Condition withdrawCondition = wLock.newCondition();
+		//@NonNull
+		//private final Condition withdrawCondition = wLock.newCondition();
 		
 		@Getter
 		@NonNull
@@ -198,7 +201,7 @@ public class UnAtomicity {
 			wLock.lock();
 			try {
 				balance += x;
-				withdrawCondition.signalAll();
+				//withdrawCondition.signalAll();
 			} finally {
 				wLock.unlock();
 			}
@@ -210,8 +213,8 @@ public class UnAtomicity {
 
 			if (wLock.tryLock(1, TimeUnit.NANOSECONDS)) {
 				countW.incrementAndGet();
-				while (x > balance)
-					withdrawCondition.await();
+				//while (x > balance)
+				//	withdrawCondition.await();
 				balance -= x;
 				//Assert.assertFalse(balance < 0);
 				wLock.unlock();
@@ -231,13 +234,86 @@ public class UnAtomicity {
 		public int getBalance() {
 			countR.incrementAndGet();
 			int bal;
-			//rLock.lock();
-			//try{
+			rLock.lock();
+			try{
 			
 			bal= balance;
-			//}finally{
-			//rLock.unlock();
-			//}
+			}finally{
+			rLock.unlock();
+			}
+			return bal;
+		}
+
+	}
+
+	@NoArgsConstructor
+	private static class FixUsingStampedLocks implements BankAccount {
+		private volatile int balance = 0;
+		@NonNull
+		private final StampedLock stampedLock = new StampedLock();
+																	 
+		private final Lock rLock = stampedLock.asReadLock();
+		private final Lock wLock = stampedLock.asWriteLock();
+
+		//@NonNull
+		//private final Condition withdrawCondition = stampedLock.
+		
+		@Getter
+		@NonNull
+		private final AtomicLong countR = new AtomicLong(0L);
+	
+		@Getter
+		@NonNull
+		private final AtomicLong countW = new AtomicLong(0L);
+
+		@Override
+		@SneakyThrows
+		public void deposit(int x) {
+			countW.incrementAndGet();
+			long stamp = stampedLock.writeLock();
+			try {
+				balance += x;
+				//withdrawCondition.signalAll();
+			} finally {
+				stampedLock.unlockWrite(stamp);
+			}
+		}
+
+		@Override
+		@SneakyThrows
+		public void withdraw(int x) {
+			countW.incrementAndGet();
+			long stamp = stampedLock.writeLock();
+			try {
+				balance -= x;
+				//withdrawCondition.signalAll();
+			} finally {
+				stampedLock.unlockWrite(stamp);
+			}
+		}
+
+		public long getCountOfOperations() {
+			return countR.get() + countW.get();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 */
+		@Override
+		public int getBalance() {
+			long stamp = stampedLock.tryOptimisticRead();
+			countR.incrementAndGet();
+			int bal=balance;
+			if(!stampedLock.validate(stamp)){
+				
+				stamp=stampedLock.readLock();
+				try{
+					bal=balance;
+				}finally{
+					stampedLock.unlockRead(stamp);
+				}
+			}
 			return bal;
 		}
 

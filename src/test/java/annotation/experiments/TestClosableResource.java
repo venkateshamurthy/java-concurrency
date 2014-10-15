@@ -5,7 +5,7 @@ package annotation.experiments;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-
+import java.io.File;
 import lombok.Cleanup;
 import lombok.extern.log4j.Log4j2;
 
@@ -27,7 +27,7 @@ public class TestClosableResource {
 	@Test
 	public void justTestOpenClose() throws IOException {
 		@Cleanup("close")
-		FileInputStream in = new FileInputStream("/etc/hosts") ;
+		FileInputStream in = new FileInputStream("pom.xml") ;
 		fin=in;
 	}
 	@Test

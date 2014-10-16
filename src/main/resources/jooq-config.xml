@@ -4,10 +4,10 @@
 	<jdbc>
 		<driver>oracle.jdbc.OracleDriver</driver>
 		<!-- <url>jdbc:oracle:thin:@${oracle.databaseHost}:${oracle.databasePort}/${oracle.databaseName}</url> -->
-		<url>jdbc:oracle:thin:@sp2-stgamd-clu.data.corp.sp2.yahoo.com:1521/amddbd_etl
+		<url>jdbc:oracle:thin:@hostnamme:1521/amddbd_etl
 		</url>
-		<user>amd_ycpi_etl</user>
-		<password>amd_ycpi_etl</password>
+		<user>user</user>
+		<password>password</password>
 	</jdbc>
 	<generator>
 		<!-- The default code generator. You can override this one, to generate 
@@ -23,7 +23,7 @@
 			<name>org.jooq.util.oracle.OracleDatabase</name>
 			<!-- The database schema (or in the absence of schema support, in your 
 				RDBMS this can be the owner, user, database name) to be generated -->
-			<inputSchema>AMD_YCPI_DIM</inputSchema>
+			<inputSchema>DB-SCHEMA</inputSchema>
 
 			<!-- All elements that are generated from your schema (several Java regular 
 				expressions, separated by comma) Watch out for case-sensitivity. Depending 
@@ -45,7 +45,7 @@
 		<target>
 			<!-- The destination package of your generated classes (within the destination 
 				directory) -->
-			<packageName>com.yahoo.global.amd.grid.reports.db.objects.jooq.ycpidim</packageName>
+			<packageName>com.reports.db.objects.jooq</packageName>
 			<!-- The destination directory of your generated classes -->
 			<directory>src/main/generated</directory>
 		</target>

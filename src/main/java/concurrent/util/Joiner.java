@@ -3,9 +3,9 @@ package concurrent.util;
 import java.util.concurrent.ExecutionException;
 
 public interface Joiner<InterimResult, FinalResult> {
-	public void clear();
+	void clear();
 
-	public FinalResult getResult() throws ExecutionException;
+	FinalResult getResult() throws ExecutionException;
 
-	public void join(InterimResult callableResult) throws ExecutionException;
+	void join(InterimResult callableResult) throws ExecutionException;
 }

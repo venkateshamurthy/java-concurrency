@@ -32,30 +32,30 @@ public interface TransactionalCompletionService<V> extends CompletionService<V> 
 	/**
 	 * Enables the {@link CompletionService} to accept submission of tasks. The implementations may simply set a flag.
 	 */
-	public void startTransaction();
+	void startTransaction();
 
 	/**
 	 * Enables the {@link CompletionService} to reject submission of tasks
 	 */
-	public void endTransaction();
+	void endTransaction();
 
 	/**
 	 * Cancels the entire transaction. It makes best effort to cancel the unstarted/unfinished tasks.
 	 * It all depends on <b>interrupt-ability of tasks</b> for this to succeed.
 	 */
-	public void cancelTransaction();
+	void cancelTransaction();
 
 	/**
 	 * Check to see if the transaction is in progress
 	 * 
 	 * @return Progress state
 	 */
-	public boolean isInTransaction();
+	boolean isInTransaction();
 
 	/**
 	 * Check to see if the transaction is finished
 	 * 
 	 * @return true if transaction has finished.
 	 */
-	public boolean isTransactionFinished();
+	boolean isTransactionFinished();
 }

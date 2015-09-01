@@ -5,6 +5,9 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+
 /**
  * This policy basically tries to block-wait for a given time and tries to
  * reinsert into the ThreadPoolExecutor's queue.
@@ -14,9 +17,10 @@ import java.util.concurrent.TimeUnit;
  * @author vmurthy
  * 
  */
+@FieldDefaults(level=AccessLevel.PRIVATE,makeFinal=true)
 public class ResubmitAfterWaitPolicy implements RejectedExecutionHandler {
-	private final long timeOut;
-	private final TimeUnit timeUnit;
+	long timeOut;
+	TimeUnit timeUnit;
 
 	public ResubmitAfterWaitPolicy() {
 		this(Long.MAX_VALUE, TimeUnit.SECONDS);

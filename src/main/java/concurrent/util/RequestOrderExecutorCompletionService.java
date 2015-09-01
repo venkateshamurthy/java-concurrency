@@ -12,6 +12,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+
 /**
  * RequestOrderExecutorCompletionService; as the name implies is an {@link CompletionService} implementation <br>
  * that <b>renders the result (in the take/poll methods) of each task in the same order as the request task submission</b>.
@@ -20,16 +23,17 @@ import java.util.concurrent.TimeoutException;
  *
  * @param <V>
  */
+@FieldDefaults(level=AccessLevel.PRIVATE,makeFinal=true)
 public class RequestOrderExecutorCompletionService<V> implements CompletionService<V> {
     /**
      * executor that needs to be wrapped
      */
-    private final Executor                 executor;
+    Executor                 executor;
     /**
      * requestTaskQueue basically holds the Futures in the order of
      *              requests that are taken
      */
-    private final BlockingQueue<Future<V>> requestTaskQueue;
+    BlockingQueue<Future<V>> requestTaskQueue;
 
     /**
      * Ctor

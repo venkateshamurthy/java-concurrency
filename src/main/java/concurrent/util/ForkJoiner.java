@@ -10,12 +10,12 @@ import java.util.concurrent.ExecutionException;
  * @param <FinalResult>
  */
 public interface ForkJoiner<Task, InterimResult, FinalResult> {
-	public void cancel();
+	void cancel();
 
-	public FinalResult execute(Task request,
+	FinalResult execute(Task request,
 			Forker<Task, InterimResult> forker,
 			Joiner<InterimResult, FinalResult> joiner)
 			throws ExecutionException;
 
-	public void shutdown();
+	void shutdown();
 }

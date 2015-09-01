@@ -16,6 +16,10 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+@FieldDefaults(level=AccessLevel.PRIVATE,makeFinal=true)
 public class ParallelTask<V> implements Future<Collection<V>> {
 
   // FutureTask to release Semaphore as completed
@@ -28,12 +32,12 @@ public class ParallelTask<V> implements Future<Collection<V>> {
     }
   }
 
-  private final List<SemaphoreBasedFuture> requestQueue;
-  private final BlockingQueue<SemaphoreBasedFuture> responseQueue;
-  private final Semaphore semaphore;
-  private final Executor executor;
-  private final int size;
-  private boolean cancelled = false;
+  List<SemaphoreBasedFuture> requestQueue;
+  BlockingQueue<SemaphoreBasedFuture> responseQueue;
+  Semaphore semaphore;
+  Executor executor;
+  int size;
+  @NonFinal boolean cancelled = false;
 
   public ParallelTask(Executor service, Collection<Callable<V>> callable, int permits) {
     if (service == null || callable == null) throw new NullPointerException();

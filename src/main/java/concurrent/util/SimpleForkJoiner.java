@@ -9,23 +9,26 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.log4j.Log4j2;
 @Log4j2
+@FieldDefaults(level=AccessLevel.PRIVATE,makeFinal=true)
 public class SimpleForkJoiner<Task, InterimResult, FinalResult> implements
 		ForkJoiner<Task, InterimResult, FinalResult> {
 	/**
 	 * A Transactional Service that works multiple similar tasks
 	 */
-	private final TransactionalCompletionService<InterimResult> transactionalForkedTaskService;
+	TransactionalCompletionService<InterimResult> transactionalForkedTaskService;
 	/**
 	 * A local completion service to control request submission and results gathering 
 	 */
 	@SuppressWarnings({ "rawtypes" })
-	private final CompletionService localCompletionService;
+	CompletionService localCompletionService;
 	/**
 	 * A local threadPool
 	 */
-	final ThreadPoolExecutor threadPool;
+	ThreadPoolExecutor threadPool;
 
 	/**
 	 * Constructor

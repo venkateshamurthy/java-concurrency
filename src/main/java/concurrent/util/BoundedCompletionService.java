@@ -8,6 +8,9 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+
 /**
  * A Bounding decorator for a {@link CompletionService} that bounds the limit of tasks to
  * be submitted by means of a {@link Semaphore}.
@@ -16,15 +19,16 @@ import java.util.concurrent.TimeUnit;
  * @param <V>
  *            is the result type
  */
+@FieldDefaults(level=AccessLevel.PRIVATE,makeFinal=true)
 public class BoundedCompletionService<V> implements CompletionService<V> {
 	/**
 	 * semaphore for bounding.
 	 */
-	protected Semaphore semaphore;
+	Semaphore semaphore;
 	/**
 	 * delegateCompletionService which is the delegate
 	 */
-	protected CompletionService<V> delegateCompletionService;
+	CompletionService<V> delegateCompletionService;
 
 	/**
 	 * This constructor ensures only one task submission happens in a given time

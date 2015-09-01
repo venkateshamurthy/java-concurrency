@@ -10,5 +10,5 @@ import java.util.concurrent.Callable;
  * @param <T> type of result from callable
  */
 public interface CancelCallable<T> extends Callable<T> {
-	public void cancel();
+	void cancel();
 }

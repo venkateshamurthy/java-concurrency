@@ -4,6 +4,9 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 /**
  * This class is a  {@link TransactionalCompletionService} adapter to {@link BoundedCompletionService}.<br>
  * <p>
@@ -14,17 +17,18 @@ import java.util.concurrent.TimeUnit;
  *
  * @param <V>
  */
+@FieldDefaults(level=AccessLevel.PRIVATE,makeFinal=true)
 public class BoundedTransactionalCompletionService<V> implements
 		TransactionalCompletionService<V> {
 	/**
 	 * TransactionalCompletionService handle of the same service passed
 	 */
-	private final TransactionalCompletionService<V> transactionalCompletionService;
+	TransactionalCompletionService<V> transactionalCompletionService;
 
 	/**
 	 * BoundedCompletionServce handle of the same service passed
 	 */
-	private final CompletionService<V> boundedCompletionService;
+	CompletionService<V> boundedCompletionService;
 
 	/**
 	 * Constructor constructs a bounded and a transactional flavor of passed

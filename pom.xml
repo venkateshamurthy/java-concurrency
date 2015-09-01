@@ -5,11 +5,12 @@
 	<groupId>${project.artifactId}</groupId>
 	<artifactId>java-concurrency</artifactId>
 	<version>4.1.${build}</version>
+	
 	<packaging>jar</packaging>
 	<name>${project.artifactId}</name>
 	<properties>
 		<bug.component>${project.description}</bug.component>
-		<mailingList.name>di-devel</mailingList.name>
+		<mailingList.name>ts_v_murthy@yahoo.com</mailingList.name>
 		<realVersion>4.1.${build}</realVersion>
 		<libPath>${basedir}/lib</libPath>
 		<confPath>${basedir}/config</confPath>
@@ -28,8 +29,6 @@
 		<source_jdk_version>${min_jdk_version}</source_jdk_version>
 		<target_jdk_version>${min_jdk_version}</target_jdk_version>
 		<log4jPath>file:src/main/resources/log4j2.xml</log4jPath>
-		<commitBim>commit_build.bim</commitBim>
-		<componentBim>component_build.bim</componentBim>
 		<surefireArgs></surefireArgs>
 		<testngUseDefaultListeners>false</testngUseDefaultListeners>
 		<testngReporter>
@@ -296,13 +295,6 @@
 		</pluginManagement>
 	</build>
 	<dependencies>
-
-
-		<dependency>
-			<groupId>com.paypal.infra</groupId>
-			<artifactId>infra</artifactId>
-			<version>13.4.1</version>
-		</dependency>
 
 		<dependency>
 			<groupId>org.core4j</groupId>

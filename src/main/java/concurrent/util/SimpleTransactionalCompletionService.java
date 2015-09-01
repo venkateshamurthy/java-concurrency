@@ -11,6 +11,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.extern.log4j.Log4j2;
 
 /**
@@ -20,24 +24,26 @@ import lombok.extern.log4j.Log4j2;
  * @author vmurthy
  */
 @Log4j2
+@Data
+@FieldDefaults(level=AccessLevel.PRIVATE,makeFinal=true)
 public class SimpleTransactionalCompletionService<V> implements
 		TransactionalCompletionService<V> {
 	/**
 	 * A thread visible flag to indicate whether this is in transaction
 	 */
-	private volatile boolean isInTransaction;
+	@NonFinal volatile boolean isInTransaction;
 	/**
 	 * A delegate Completion Service
 	 */
-	private final CompletionService<V> delegateCompletionService;
+	CompletionService<V> delegateCompletionService;
 	/**
 	 * A List of future objects
 	 */
-	private final List<Future<V>> futureQueue;
+	List<Future<V>> futureQueue;
 	/**
 	 * A {@link Lock} object used to control thread safety in accessing methods.
 	 */
-	private final Lock serviceLock;
+	Lock serviceLock;
 
 	/**
 	 * A poll duration to be used in take method,<br>
@@ -45,7 +51,7 @@ public class SimpleTransactionalCompletionService<V> implements
 	 * 
 	 * @see #take()
 	 */
-	private static final int defaultPollDurationInMilliSeconds = 20;
+	static int defaultPollDurationInMilliSeconds = 20;
 
 	/**
 	 * Constructor. It has a waitingQueue for tasks and receives a delegate

@@ -1,9 +1,9 @@
 package concurrent.util.contextual;
 
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.RunnableFuture;
@@ -16,8 +16,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-/** DO NOT USE THIS YET.... 
-<p>
+
+/**
+ * DO NOT USE THIS YET....
+ * <p>
  * A context aware thread pool executor.
  * <p>
  * This executor ensures that if a {@link ContextualRunnable context aware
@@ -39,7 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 class ContextualThreadPoolExecutor<Context> extends ThreadPoolExecutor {
 	/**
 	 * Constructor - catch all constructor that will be called by invoked by
-	 * other constructors(in super class). 
+	 * other constructors(in super class).
 	 * 
 	 * @param corePoolSize
 	 * @param maximumPoolSize
@@ -55,15 +57,8 @@ class ContextualThreadPoolExecutor<Context> extends ThreadPoolExecutor {
 			BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory,
 			RejectedExecutionHandler rejectionHandler) {
 		super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,
-				threadFactory,	rejectionHandler);
+				threadFactory, rejectionHandler);
 	}
-@Override
-	public Future<?> submit(Runnable task) {
-        if (task == null) throw new NullPointerException();
-        RunnableFuture<Void> ftask = newTaskFor(task, null);
-        execute(task); //this is taking task than ftask . pl remember
-        return ftask;
-    }
 
 	/**
 	 * {@inheritDoc}.
@@ -80,9 +75,14 @@ class ContextualThreadPoolExecutor<Context> extends ThreadPoolExecutor {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void beforeExecute(Thread t, Runnable r) {
-		if (t instanceof ContextualThread && r instanceof ContextualRunnable)
-			((ContextualRunnable<Context>) r)
-					.setThreadContext((ContextualThread<Context>) t);
+		if (t instanceof ContextualThread) {
+			ContextualRunnable<Context> ctxRun = ContextualRunnable
+					.discoverFromRunnable(r);
+			log.debug("beforeExecute:Thread t is of ContextualThread "
+					+ "and whether r is contextRunnable:{}", ctxRun != null);
+			if (ctxRun != null)
+				ctxRun.setThreadContext((ContextualThread<Context>) t);
+		}
 		super.beforeExecute(t, r);
 	}
 
@@ -98,12 +98,18 @@ class ContextualThreadPoolExecutor<Context> extends ThreadPoolExecutor {
 			((ContextualRunnable<?>) r).clearThreadContext();
 	}
 
-	public static <Context> ContextualThreadPoolExecutor<Context> newFixedThreadPool(int nThreads) {
-        return new ContextualThreadPoolExecutor<Context>(nThreads, nThreads,
-                                      0L, TimeUnit.MILLISECONDS,
-                                      new LinkedBlockingQueue<Runnable>(),
-                                      new ContextualThreadFactory<Context>(),new AbortPolicy());
-    }
+	public static <Context> ContextualThreadPoolExecutor<Context> newFixedThreadPool(
+			int nThreads) {
+		return new ContextualThreadPoolExecutor<Context>(nThreads, nThreads,
+				0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
+				new ContextualThreadFactory<Context>(), new AbortPolicy());
+	}
+
+	@Override
+	protected <T> RunnableFuture<T> newTaskFor(Runnable runnable, T value) {
+		return new ContextualFutureTask<T>(runnable, value);
+	}
+
 	/**
 	 * Contextual wrapper for thread creation.
 	 * 
@@ -113,7 +119,6 @@ class ContextualThreadPoolExecutor<Context> extends ThreadPoolExecutor {
 	 */
 	private static class ContextualThreadFactory<Context> implements
 			ThreadFactory {
-
 
 		/**
 		 * {@inheritDoc}.This method specializes in creating a
@@ -157,7 +162,8 @@ class ContextualThreadPoolExecutor<Context> extends ThreadPoolExecutor {
 					return ctx;
 				}
 			};
-			setContext(ctx);
+			if (ctx != null)
+				setContext(ctx);
 		}
 
 		/** Set context to ThreadLocal */

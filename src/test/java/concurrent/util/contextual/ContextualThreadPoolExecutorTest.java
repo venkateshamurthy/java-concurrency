@@ -15,7 +15,7 @@ public class ContextualThreadPoolExecutorTest {
 	private static final String newContext = "User:new";
 
 	@Test
-	public void test() {
+	public void testForError() {
 		ContextualThreadPoolExecutor<String> ctp= ContextualThreadPoolExecutor.newFixedThreadPool(10);
 		Runnable runnable = new Runnable(){
 			@Override
@@ -23,8 +23,7 @@ public class ContextualThreadPoolExecutorTest {
 				ContextualThread<String> ct;
 				if((ct=ContextualThread.current()) !=null){
 					log.info("From {}.run method,expected-context:{} got-context:{}",ct.getName(),context,ct.getContext());
-					Assert.assertEquals("Context "+ct.getContext(),context, ct.getContext());	
-					
+					Assert.assertNotSame("Context "+ct.getContext(),context, ct.getContext());	
 				}
 			}
 		};
@@ -33,13 +32,42 @@ public class ContextualThreadPoolExecutorTest {
 		ctp.submit(ctxRunnable);
 		
 		try {
-			TimeUnit.SECONDS.sleep(4);
+			TimeUnit.SECONDS.sleep(2);
 			ctp.shutdown();
 			ctp.awaitTermination(-1, TimeUnit.DAYS);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		Assert.assertNotNull(ctxRunnable.getThrowable());
+	}
+	
+	@Test
+	public void test() {
+		ContextualThreadPoolExecutor<String> ctp= ContextualThreadPoolExecutor.newFixedThreadPool(10);
+		Runnable runnable = new Runnable(){
+			@Override
+			public void run() {
+				ContextualThread<String> ct;
+				if((ct=ContextualThread.current()) !=null){
+					log.info("From {}.run method,expected-context:{} got-context:{}",ct.getName(),newContext,ct.getContext());
+					Assert.assertEquals("Context "+ct.getContext(),newContext, ct.getContext());	
+				}
+			}
+		};
+		//ctp.submit(runnable);
+		ContextualRunnable<String> ctxRunnable = ContextualRunnable.make(newContext,runnable);
+		ctp.submit(ctxRunnable);
+		
+		try {
+			TimeUnit.SECONDS.sleep(2);
+			ctp.shutdown();
+			ctp.awaitTermination(-1, TimeUnit.DAYS);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Assert.assertNull(ctxRunnable.getThrowable());
 	}
 
 }

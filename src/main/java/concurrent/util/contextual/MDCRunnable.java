@@ -49,10 +49,7 @@ public class MDCRunnable implements Runnable {
 		@SuppressWarnings("unchecked")
 		final Map<String, String> previous = MDC.getCopyOfContextMap();
 		// Set the thread context
-		if (context != null)
-			MDC.setContextMap(context);
-		else
-			MDC.clear();
+		setContext(context);
 		// Next run the runner and within the runnable's run method MDC needs to
 		// be accessed
 		try {
@@ -62,11 +59,21 @@ public class MDCRunnable implements Runnable {
 			log.error("Error encountered in MDCRunnable", t);
 		} finally {
 			// swap the previous context back
-			if (previous != null)
-				MDC.setContextMap(previous);
-			else
-				MDC.clear();
+			setContext(previous);
 		}
+	}
+
+	/**
+	 * sets the MDC Context passed. The MDC will be cleared if context is null.
+	 * 
+	 * @param context
+	 *            is the map of context variables to be set.
+	 */
+	private void setContext(Map<?, ?> context) {
+		if (context != null)
+			MDC.setContextMap(context);
+		else
+			MDC.clear();
 	}
 
 }

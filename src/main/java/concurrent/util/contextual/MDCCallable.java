@@ -45,11 +45,12 @@ public class MDCCallable<V> implements Callable<V> {
 	 */
 	@Override
 	public V call() throws Exception {
+		// Take the previous snapshot
 		@SuppressWarnings("unchecked")
 		final Map<String, String> previous = MDC.getCopyOfContextMap();
 		// Set the thread context
 		setContext(context);
-		// Next run the runner and within the runnable's run method MDC needs to
+		// Next call the caller and within the caller's call method MDC needs to
 		// be accessed
 		try {
 			return callable.call();

@@ -38,6 +38,9 @@
 		<skipITs>${skipTests}</skipITs>
 		<skipUTs>${skipTests}</skipUTs>
 		<dist>${basedir}/dist</dist>
+		<slf4j.version>1.7.4</slf4j.version>
+		<spring.version>4.0.5.RELEASE</spring.version>
+		<logback.version>1.0.10</logback.version>
 	</properties>
 	<build>
 		<finalName>${project.artifactId}</finalName>
@@ -295,7 +298,18 @@
 		</pluginManagement>
 	</build>
 	<dependencies>
-
+<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jul-to-slf4j</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.core4j</groupId>
 			<artifactId>core4j</artifactId>
@@ -339,31 +353,31 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
-			<version>3.0.5.RELEASE</version>
+			<version>${spring.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-expression</artifactId>
-			<version>3.0.5.RELEASE</version>
+			<version>${spring.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
-			<version>3.0.5.RELEASE</version>
+			<version>${spring.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
-			<version>3.0.5.RELEASE</version>
+			<version>${spring.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
-			<version>3.0.5.RELEASE</version>
+			<version>${spring.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		 
@@ -524,4 +538,39 @@
 	</pluginRepositories>
 	<description>A Set of classes to demonstrate java concurrency
   </description>
+  	<dependencyManagement>
+		<dependencies>
+			<!-- Logging with SLF4J & LogBack -->
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>jcl-over-slf4j</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>jul-to-slf4j</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>${logback.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-core</artifactId>
+				<version>${logback.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-access</artifactId>
+				<version>${logback.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 </project>

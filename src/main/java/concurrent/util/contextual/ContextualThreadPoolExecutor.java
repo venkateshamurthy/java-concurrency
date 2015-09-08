@@ -98,6 +98,12 @@ class ContextualThreadPoolExecutor<Context> extends ThreadPoolExecutor {
 			((ContextualRunnable<?>) r).clearThreadContext();
 	}
 
+	/**
+	 * A creation method
+	 * 
+	 * @param nThreads
+	 * @return {@code ContextualThreadPoolExecutor}
+	 */
 	public static <Context> ContextualThreadPoolExecutor<Context> newFixedThreadPool(
 			int nThreads) {
 		return new ContextualThreadPoolExecutor<Context>(nThreads, nThreads,
@@ -105,6 +111,12 @@ class ContextualThreadPoolExecutor<Context> extends ThreadPoolExecutor {
 				new ContextualThreadFactory<Context>(), new AbortPolicy());
 	}
 
+	/**
+	 * {@inheritDoc}. This method in specific creates
+	 * {@link ContextualFutureTask} instead of the normal {@link FutureTask}. <br>
+	 * This is done in order to extract the {@link ContextualRunnable} at a
+	 * later time.
+	 */
 	@Override
 	protected <T> RunnableFuture<T> newTaskFor(Runnable runnable, T value) {
 		return new ContextualFutureTask<T>(runnable, value);
@@ -184,6 +196,13 @@ class ContextualThreadPoolExecutor<Context> extends ThreadPoolExecutor {
 			log.debug("Clear context:{}", threadLocal.get());
 		}
 
+		/**
+		 * If the current thread is a {@link ContextualThread} then the current
+		 * thread is casted and sent accordingly
+		 * 
+		 * @return {@link ContextualThread} in case of the curremt thread being
+		 *         the same type else null
+		 */
 		public static <Context> ContextualThread<Context> current() {
 			Thread t = Thread.currentThread();
 			if (t instanceof ContextualThread)

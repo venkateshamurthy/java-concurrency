@@ -27,7 +27,7 @@ class ContextualFutureTask<Context, V> extends FutureTask<V> {
 	Context context;
 	
 	/**
-	 * Constructor.
+	 * Constructor for passing runnable.
 	 * 
 	 * @param runnable
 	 *            - if the runnable passed is of {@link ContextualRunnable} then
@@ -50,7 +50,7 @@ class ContextualFutureTask<Context, V> extends FutureTask<V> {
 		context=((ContextualRunnable<Context>) runnable).getContext();
 	}
 	/**
-	 * * Constructor.
+	 * * Constructor for passing callablr.
 	 * 
 	 * @param callable
 	 *            - if the callable passed is of {@link ContextualCallable} then

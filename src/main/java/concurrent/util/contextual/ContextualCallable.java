@@ -22,7 +22,7 @@ import concurrent.util.contextual.ContextualThreadPoolExecutor.ContextualThread;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ContextualCallable<Context,V> implements Callable<V> {
 
-	/** Context of runnable */
+	/** Context of callable */
 	Context context;
 
 	/** The actual core runnable that is decorated */

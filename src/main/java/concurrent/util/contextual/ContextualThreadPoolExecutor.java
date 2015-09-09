@@ -18,8 +18,6 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * DO NOT USE THIS YET....
- * <p>
  * A context aware thread pool executor.
  * <p>
  * This executor ensures that if a {@link ContextualRunnable context aware
@@ -76,12 +74,8 @@ class ContextualThreadPoolExecutor<Context> extends ThreadPoolExecutor {
 	@Override
 	protected void beforeExecute(Thread t, Runnable r) {
 		if (t instanceof ContextualThread) {
-			ContextualRunnable<Context> ctxRun = ContextualRunnable
-					.discoverFromRunnable(r);
-			log.debug("beforeExecute:Thread t is of ContextualThread "
-					+ "and whether r is contextRunnable:{}", ctxRun != null);
-			if (ctxRun != null)
-				ctxRun.setThreadContext((ContextualThread<Context>) t);
+			Context context = ContextualRunnable.getContext(r);
+			((ContextualThread<Context>) t).setContext(context);;
 		}
 		super.beforeExecute(t, r);
 	}
@@ -119,7 +113,7 @@ class ContextualThreadPoolExecutor<Context> extends ThreadPoolExecutor {
 	 */
 	@Override
 	protected <T> RunnableFuture<T> newTaskFor(Runnable runnable, T value) {
-		return new ContextualFutureTask<T>(runnable, value);
+		return new ContextualFutureTask<Context,T>(runnable, value);
 	}
 
 	/**

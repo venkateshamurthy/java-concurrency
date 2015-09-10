@@ -5,7 +5,7 @@
 	<groupId>${project.artifactId}</groupId>
 	<artifactId>java-concurrency</artifactId>
 	<version>4.1.${build}</version>
-	
+
 	<packaging>jar</packaging>
 	<name>${project.artifactId}</name>
 	<properties>
@@ -46,61 +46,22 @@
 		<finalName>${project.artifactId}</finalName>
 		<plugins>
 
-			<!-- <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.7</version>
-				<executions>
-					<execution>
-						<id>copy-source</id>
-						<phase>compile</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<configuration>
-
-							<target name="dist-source-jar">
-								<delete dir="${dist}" />
-								<copydir dest="${dist}/src" src="src" />
-								just to avoid errors while building.. as now i dont need jars 
-									in lib
-								<mkdir dir="lib" />
-								<copydir dest="${dist}/lib" src="lib" />
-								<copy todir="${dist}">
-									<fileset dir="${basedir}">
-										<include name="pom.xml" />
-										<include name="input*" />
-										<include name="run*" />
-									</fileset>
-								</copy>
-								<chmod file="${dist}/run*" perm="+rwx" />
-								<jar destfile="${dist}/${artifactId}-sources.jar">
-									<fileset dir="${dist}">
-										<include name="lib/**/*.jar" />
-										<include name="src/**/*" />
-										<include name="pom.xml" />
-										<include name="input*" />
-										<include name="run*" />
-									</fileset>
-								</jar>
-								<zip destfile="${dist}/${artifactId}-sources.zip">
-									<fileset dir="${dist}">
-										<include name="lib/**/*.jar" />
-										<include name="src/**/*" />
-										<include name="pom.xml" />
-										<include name="input*" />
-										<include name="run*" />
-									</fileset>
-								</zip>
-								<chmod file="${dist}/${artifactId}-sources.jar" perm="777" />
-								<chmod file="${dist}/${artifactId}-sources.zip" perm="777" />
-							</target>
-
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
- -->
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-antrun-plugin</artifactId> 
+				<version>1.7</version> <executions> <execution> <id>copy-source</id> <phase>compile</phase> 
+				<goals> <goal>run</goal> </goals> <configuration> <target name="dist-source-jar"> 
+				<delete dir="${dist}" /> <copydir dest="${dist}/src" src="src" /> just to 
+				avoid errors while building.. as now i dont need jars in lib <mkdir dir="lib" 
+				/> <copydir dest="${dist}/lib" src="lib" /> <copy todir="${dist}"> <fileset 
+				dir="${basedir}"> <include name="pom.xml" /> <include name="input*" /> <include 
+				name="run*" /> </fileset> </copy> <chmod file="${dist}/run*" perm="+rwx" 
+				/> <jar destfile="${dist}/${artifactId}-sources.jar"> <fileset dir="${dist}"> 
+				<include name="lib/**/*.jar" /> <include name="src/**/*" /> <include name="pom.xml" 
+				/> <include name="input*" /> <include name="run*" /> </fileset> </jar> <zip 
+				destfile="${dist}/${artifactId}-sources.zip"> <fileset dir="${dist}"> <include 
+				name="lib/**/*.jar" /> <include name="src/**/*" /> <include name="pom.xml" 
+				/> <include name="input*" /> <include name="run*" /> </fileset> </zip> <chmod 
+				file="${dist}/${artifactId}-sources.jar" perm="777" /> <chmod file="${dist}/${artifactId}-sources.zip" 
+				perm="777" /> </target> </configuration> </execution> </executions> </plugin> -->
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
 				<version>2.4.2</version>
@@ -298,7 +259,7 @@
 		</pluginManagement>
 	</build>
 	<dependencies>
-<dependency>
+		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
 		</dependency>
@@ -380,7 +341,7 @@
 			<version>${spring.version}</version>
 			<scope>compile</scope>
 		</dependency>
-		 
+
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
@@ -445,6 +406,11 @@
 			<groupId>org.adrianwalker</groupId>
 			<artifactId>multiline-string</artifactId>
 			<version>0.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>18.0</version>
 		</dependency>
 	</dependencies>
 	<profiles>
@@ -513,7 +479,7 @@
 		<repository>
 			<id>multiline-release-repo</id>
 			<url>https://raw.github.com/benelog/multiline/master/maven-repository
-      </url>
+			</url>
 		</repository>
 		<repository>
 			<id>codelds</id>
@@ -533,12 +499,12 @@
 		<pluginRepository>
 			<id>multiline-release-repo</id>
 			<url>https://raw.github.com/benelog/multiline/master/maven-repository
-      </url>
+			</url>
 		</pluginRepository>
 	</pluginRepositories>
 	<description>A Set of classes to demonstrate java concurrency
-  </description>
-  	<dependencyManagement>
+	</description>
+	<dependencyManagement>
 		<dependencies>
 			<!-- Logging with SLF4J & LogBack -->
 			<dependency>

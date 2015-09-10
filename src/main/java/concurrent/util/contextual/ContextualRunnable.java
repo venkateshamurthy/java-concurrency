@@ -1,5 +1,7 @@
 package concurrent.util.contextual;
 
+import static util.Util.cast;
+import util.Util;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -17,7 +19,8 @@ import concurrent.util.contextual.ContextualThreadPoolExecutor.ContextualThread;
 @Slf4j
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class ContextualRunnable<Context> implements Runnable {
+public class ContextualRunnable<Context> implements Runnable,
+		TaskContext<Context> {
 
 	/** Context of runnable */
 	Context context;
@@ -54,7 +57,7 @@ public class ContextualRunnable<Context> implements Runnable {
 			runner.run();
 		} catch (Throwable t) {
 			this.throwable = t;
-			log.error("Error:",t);
+			log.error("Error:", t);
 		}
 	}
 
@@ -79,8 +82,9 @@ public class ContextualRunnable<Context> implements Runnable {
 	 */
 	public static <Context> ContextualRunnable<Context> make(
 			final Context context, final Runnable command) {
-		return ContextualRunnable.class.isAssignableFrom(command.getClass()) ? ((ContextualRunnable<Context>) command)
+		return command instanceof ContextualRunnable ? (ContextualRunnable<Context>) command
 				: new ContextualRunnable<Context>(context, command);
+		// cast(command, new ContextualRunnable<Context>(context, command));
 	}
 
 	/**
@@ -106,19 +110,11 @@ public class ContextualRunnable<Context> implements Runnable {
 	 *            an instance of {@link Runnable}
 	 * @return {@code ContextualRunnable} possibly or null.
 	 */
-	public static <Context> Context getContext(
-			Runnable runnable) {
-		final Context context;
-		if (runnable == null)
-			context = null;
-		else if (runnable instanceof ContextualRunnable)
-			context = ((ContextualRunnable<Context>) runnable).getContext();
-		else if (runnable instanceof ContextualFutureTask)
-			context = ((ContextualFutureTask<Context,Void>) runnable).getContext();
-		else
-			context = null;
-		return context;
+	public static <Context> Context getContext(Runnable runnable) {
+		return runnable != null && runnable instanceof TaskContext 
+				? ((TaskContext<Context>) runnable).getContext() : null;
+		/*TaskContext<Context> t=Util.<TaskContext<Context>>cast(runnable);
+		return t==null?null:t.getContext();*/
 	}
 
-	
 }

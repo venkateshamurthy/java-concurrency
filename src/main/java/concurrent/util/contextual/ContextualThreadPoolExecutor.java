@@ -1,8 +1,6 @@
 package concurrent.util.contextual;
 
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
@@ -16,6 +14,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import util.Util;
 
 /**
  * A context aware thread pool executor.
@@ -75,7 +74,8 @@ class ContextualThreadPoolExecutor<Context> extends ThreadPoolExecutor {
 	protected void beforeExecute(Thread t, Runnable r) {
 		if (t instanceof ContextualThread) {
 			Context context = ContextualRunnable.getContext(r);
-			((ContextualThread<Context>) t).setContext(context);;
+			((ContextualThread<Context>) t).setContext(context);
+			;
 		}
 		super.beforeExecute(t, r);
 	}
@@ -113,7 +113,7 @@ class ContextualThreadPoolExecutor<Context> extends ThreadPoolExecutor {
 	 */
 	@Override
 	protected <T> RunnableFuture<T> newTaskFor(Runnable runnable, T value) {
-		return new ContextualFutureTask<Context,T>(runnable, value);
+		return new ContextualFutureTask<Context, T>(runnable, value);
 	}
 
 	/**
@@ -198,11 +198,7 @@ class ContextualThreadPoolExecutor<Context> extends ThreadPoolExecutor {
 		 *         the same type else null
 		 */
 		public static <Context> ContextualThread<Context> current() {
-			Thread t = Thread.currentThread();
-			if (t instanceof ContextualThread)
-				return (ContextualThread<Context>) t;
-			else
-				return null;
+			return Util.cast(Thread.currentThread());
 		}
 	}
 }

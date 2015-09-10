@@ -4,6 +4,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
+import util.Util;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -21,7 +22,7 @@ import lombok.experimental.FieldDefaults;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-class ContextualFutureTask<Context, V> extends FutureTask<V> {
+class ContextualFutureTask<Context, V> extends FutureTask<V> implements TaskContext<Context>{
 
 	/** Context reference captured during construction */
 	Context context;
@@ -43,11 +44,11 @@ class ContextualFutureTask<Context, V> extends FutureTask<V> {
 		super(
 				ContextualCallable
 					.make(
-							((ContextualRunnable<Context>) runnable).getContext(), 
-							Executors.callable((ContextualRunnable<Context>) runnable, result)
+							ContextualRunnable.getContext(runnable), 
+							Executors.callable(Util.<ContextualRunnable<Context>>cast(runnable), result)
 						 )
 			);
-		context=((ContextualRunnable<Context>) runnable).getContext();
+		context=ContextualRunnable.getContext(runnable);
 	}
 	/**
 	 * * Constructor for passing callablr.
@@ -61,6 +62,6 @@ class ContextualFutureTask<Context, V> extends FutureTask<V> {
 	 */
 	public ContextualFutureTask (Callable<V> callable)throws NullPointerException, ClassCastException{
 		super(callable);
-		context=((ContextualCallable<Context,V>) callable).getContext();
+		context=ContextualCallable.getContext(callable);
 	}
 }

@@ -1,7 +1,16 @@
 package concurrent.util.contextual;
 
+
+
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
+
+
+
+
+
+import util.Util;
+
+import com.google.common.base.Optional;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -20,7 +29,7 @@ import concurrent.util.contextual.ContextualThreadPoolExecutor.ContextualThread;
 @Slf4j
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class ContextualCallable<Context,V> implements Callable<V> {
+public class ContextualCallable<Context, V> implements Callable<V>, TaskContext<Context> {
 
 	/** Context of callable */
 	Context context;
@@ -55,9 +64,9 @@ public class ContextualCallable<Context,V> implements Callable<V> {
 	public V call() throws Exception {
 		try {
 			return callable.call();
-		} catch ( Throwable t) {
+		} catch (Throwable t) {
 			this.throwable = t;
-			log.error("Error:",t);
+			log.error("Error:", t);
 			throw t;
 		}
 	}
@@ -68,7 +77,8 @@ public class ContextualCallable<Context,V> implements Callable<V> {
 	 * @param command
 	 * @return ContextualCallable
 	 */
-	public static <Context,V> ContextualCallable<Context, V> make(final Callable<V> command) {
+	public static <Context, V> ContextualCallable<Context, V> make(
+			final Callable<V> command) {
 		return make(null, command);
 	}
 
@@ -81,11 +91,12 @@ public class ContextualCallable<Context,V> implements Callable<V> {
 	 * @param command
 	 * @return ContextualRunnable
 	 */
-	public static <Context,V> ContextualCallable<Context,V> make(
+	public static <Context, V> ContextualCallable<Context, V> make(
 			final Context context, final Callable<V> command) {
-		return ContextualCallable.class.isAssignableFrom(command.getClass()) 
-				? ((ContextualCallable<Context,V>) command)
-				: new ContextualCallable<Context,V>(context, command);
+		ContextualCallable<Context, V> cc= 
+				command instanceof ContextualCallable?(ContextualCallable<Context,V>)command:new ContextualCallable<Context, V>(context,command);
+				//cast(command, new ContextualCallable<Context, V>(context,command));
+		return cc;
 	}
 
 	/**
@@ -96,8 +107,8 @@ public class ContextualCallable<Context,V> implements Callable<V> {
 	 * @return a new ContextualRunnable with passed context but with
 	 *         {@link #callable}
 	 */
-	public ContextualCallable<Context,V> withContext(Context context) {
-		return new ContextualCallable<Context,V>(context, callable);
+	public ContextualCallable<Context, V> withContext(Context context) {
+		return new ContextualCallable<Context, V>(context, callable);
 	}
 
 	/**
@@ -112,17 +123,10 @@ public class ContextualCallable<Context,V> implements Callable<V> {
 	 *         {@code ContextualCallable}/{@code ContextualFutureTask}.
 	 *         otherwise a null.
 	 */
-	public static <Context,V> Context getContext(
-			Callable<V> callable) {
-		final Context context;
-		if (callable == null)
-			context = null;
-		else if (callable instanceof ContextualCallable)
-			context = ((ContextualCallable<Context,V>) callable).getContext();
-		else if (callable instanceof ContextualFutureTask)
-			context = ((ContextualFutureTask<Context,Void>) callable).getContext();
-		else
-			context = null;
-		return context;
+	public static <Context, V> Context getContext(Callable<V> callable) {
+		//callable != null && callable instanceof TaskContext	? ((TaskContext<Context>) callable).getContext() : null;
+		TaskContext<Context> t=Util.<TaskContext<Context>>cast(callable);
+		return t==null?null:t.getContext();
 	}
+	
 }

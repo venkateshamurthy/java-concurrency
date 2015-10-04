@@ -17,9 +17,12 @@ public abstract class BaseTask<V> implements
 	/** A construction time injected context basically stored/retained as a memento*/
 	protected final ContextualMemento<Map<String, String>> thisMemento;
 
-	/** Ctor */
-	private BaseTask(Map<String, String> map) {
-		thisMemento = MapMemento.create(map);
+	/** 
+	 * Ctor 
+	 * @param context represents a task specific context to be used when actual execution happens
+	 */
+	private BaseTask(Map<String, String> context) {
+		thisMemento = saveToMemento(context);
 	}
 
 	@Override
@@ -28,7 +31,7 @@ public abstract class BaseTask<V> implements
 	}
 
 	/**
-	 * {@inheritDoc} and return for to note it some where. The caretaker is the sub classes here.
+	 * {@inheritDoc} and return for to note it some where.
 	 */
 	@Override
 	public ContextualMemento<Map<String, String>> saveToMemento(

@@ -4,12 +4,17 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.slf4j.MDC;
-
+/**
+ * A task abstraction to deal with thread context to be saved and restores before and after task execution.
+ * @author murthyv
+ *
+ * @param <V>
+ */
 public abstract class BaseTask<V> implements
 		ContextualMementoOriginator<Map<String, String>>,
 		ContextualMemento<Map<String, String>> {
 
-	/** A construction time injected context */
+	/** A construction time injected context basically stored/retained as a memento*/
 	protected final ContextualMemento<Map<String, String>> thisMemento;
 
 	/** Ctor */
@@ -22,6 +27,9 @@ public abstract class BaseTask<V> implements
 		return thisMemento.getContext();
 	}
 
+	/**
+	 * {@inheritDoc} and return for to note it some where. The caretaker is the sub classes here.
+	 */
 	@Override
 	public ContextualMemento<Map<String, String>> saveToMemento(
 			Map<String, String> context) {
@@ -40,7 +48,7 @@ public abstract class BaseTask<V> implements
 	}
 
 	/**
-	 * Restore from memento
+	 * {@inheritDoc}. In this implementation MDC is either set with memento context or cleared in case if memento is empty
 	 */
 	@Override
 	public void restoreFromMemento(
@@ -71,7 +79,12 @@ public abstract class BaseTask<V> implements
 	public static Runnable wrap(Map<String, String> ctx, Runnable runnable) {
 		return new RunnableTask(runnable, ctx);
 	}
-
+	/**
+	 * A simple template wrapper in its call method to manage saving and restoring memento
+	 * @author murthyv
+	 *
+	 * @param <V>
+	 */
 	private static class CallableTask<V> extends BaseTask<V> implements
 			Callable<V> {
 		private final Callable<V> callable;
@@ -96,7 +109,12 @@ public abstract class BaseTask<V> implements
 			}
 		}
 	}
-
+	/**
+	 * A simple template wrapper in its run method to manage saving and restoring memento
+	 * @author murthyv
+	 *
+	 * @param <V>
+	 */
 	private static class RunnableTask extends BaseTask<Void> implements
 			Runnable {
 		/** Runnable */

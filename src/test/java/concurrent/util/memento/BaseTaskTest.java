@@ -57,7 +57,7 @@ public class BaseTaskTest {
 			}
 		};
 		ExecutorService es = Executors.newSingleThreadExecutor();
-		Future<String> f = es.submit(BaseTask.wrap(context, callable));
+		Future<String> f = es.submit(BaseTask.wrap(callable,context));
 		Assert.assertEquals("Something",f.get());
 	}
 	@Test
@@ -73,7 +73,7 @@ public class BaseTaskTest {
 			}
 		};
 		ExecutorService es = Executors.newSingleThreadExecutor();
-		Future<?> f = es.submit(BaseTask.wrap(context, runnable));
+		Future<?> f = es.submit(BaseTask.wrap(runnable,context));
 		Assert.assertNull(f.get());
 	}	
 }

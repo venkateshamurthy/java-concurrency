@@ -1,5 +1,9 @@
 package util;
 
+import com.google.common.base.Optional;
+
+import concurrent.util.contextual.TaskContext;
+
 
 public class Util {
 
@@ -35,4 +39,31 @@ public class Util {
 		return cast(x, (T)null);
 	}
 	
+	public static TaskContext<String> StringCtx = new TaskContext<String>(){
+		@Override
+		public String getContext() {
+			return "StringContext";
+		}
+	};
+	public static TaskContext<Integer> intCtx = new TaskContext<Integer>(){
+		@Override
+		public Integer getContext() {
+			return 10;
+		}
+	}; 
+	public static <T> TaskContext<T> makeCtx(Object o){
+		try{
+			return (TaskContext<T>)o;
+		
+		}catch(Throwable t){
+			t.printStackTrace();
+			return TaskContext.NONE;
+		}
+	}
+	public static void main(String[] args){
+		TaskContext<String> t=makeCtx(StringCtx);
+		System.out.println(t.getContext());
+		t=makeCtx(intCtx);
+		System.out.println(t.getContext());
+	}
 }

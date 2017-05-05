@@ -80,7 +80,7 @@ public class InVisibility {
 		@SneakyThrows
 		public void run() {
 			log.info("Starting Reasonable Worker...");
-			while (start) {
+			while (Thread.currentThread().isInterrupted() || start) {
 				Thread.currentThread().sleep(1000);
 				log.info("doing something");
 			}
@@ -89,6 +89,7 @@ public class InVisibility {
 
 		public void stop() {
 			start = false;
+			Thread.currentThread().interrupt();
 		}
 	}
 

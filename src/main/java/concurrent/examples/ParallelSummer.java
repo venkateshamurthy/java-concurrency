@@ -2,7 +2,7 @@ package concurrent.examples;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
 
-public class ForkJoinBasedSummer extends RecursiveTask<Long> {
+public class ParallelSummer extends RecursiveTask<Long> {
     static final ForkJoinPool fjPool = new ForkJoinPool();
 
     static final int SEQUENTIAL_THRESHOLD = 5000;
@@ -11,7 +11,7 @@ public class ForkJoinBasedSummer extends RecursiveTask<Long> {
     int high;
     int[] array;
 
-    ForkJoinBasedSummer(int[] arr, int lo, int hi) {
+    ParallelSummer(int[] arr, int lo, int hi) {
         array = arr;
         low   = lo;
         high  = hi;
@@ -25,8 +25,8 @@ public class ForkJoinBasedSummer extends RecursiveTask<Long> {
             return sum;
          } else {
             int mid = low + (high - low) / 2;
-            ForkJoinBasedSummer left  = new ForkJoinBasedSummer(array, low, mid);
-            ForkJoinBasedSummer right = new ForkJoinBasedSummer(array, mid, high);
+            ParallelSummer left  = new ParallelSummer(array, low, mid);
+            ParallelSummer right = new ParallelSummer(array, mid, high);
             left.fork();
             long rightAns = right.compute();
             long leftAns  = left.join();
@@ -35,6 +35,6 @@ public class ForkJoinBasedSummer extends RecursiveTask<Long> {
      }
 
      static long sumArray(int[] array) {
-         return ForkJoinBasedSummer.fjPool.invoke(new ForkJoinBasedSummer(array,0,array.length));
+         return ParallelSummer.fjPool.invoke(new ParallelSummer(array,0,array.length));
      }
 }

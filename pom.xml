@@ -259,6 +259,13 @@
 		</pluginManagement>
 	</build>
 	<dependencies>
+	    <!-- https://mvnrepository.com/artifact/org.openjdk.jcstress/jcstress-core -->
+		<dependency>
+		    <groupId>org.openjdk.jcstress</groupId>
+		    <artifactId>jcstress-core</artifactId>
+		    <version>0.3</version>
+		</dependency>
+	
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
